@@ -3,6 +3,7 @@ package com.gestion.tiendag.controller;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,7 @@ public class UsuarioController {
 
 	@GetMapping("/listar")
 	public List<Map<String, Object>> verUsuarios() {
-		return usuarioRepository.findAll().stream().map(this::toFrontend).toList();
+		return usuarioRepository.findAll().stream().map(this::toFrontend).collect(Collectors.toList());
 	}
 
 	@PostMapping("/guardar")
@@ -96,8 +97,8 @@ public class UsuarioController {
 			if (value == null) {
 				continue;
 			}
-			if (value instanceof Number number) {
-				return number.longValue();
+			if (value instanceof Number) {
+				return ((Number) value).longValue();
 			}
 
 			String text = value.toString().trim();

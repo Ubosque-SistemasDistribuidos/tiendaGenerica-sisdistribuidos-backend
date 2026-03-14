@@ -1,11 +1,11 @@
 package com.gestion.tiendag.model;
-import jakarta.persistence.Column;
+import javax.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
-import jakarta.persistence.Id;
+import javax.persistence.Id;
 
 
 

@@ -91,8 +91,8 @@ public class ProductoController {
 			if (value == null) {
 				continue;
 			}
-			if (value instanceof Number number) {
-				return number.longValue();
+			if (value instanceof Number) {
+				return ((Number) value).longValue();
 			}
 
 			String text = value.toString().trim();
@@ -108,8 +108,8 @@ public class ProductoController {
 		if (value == null) {
 			return null;
 		}
-		if (value instanceof Number number) {
-			return number.doubleValue();
+		if (value instanceof Number) {
+			return ((Number) value).doubleValue();
 		}
 
 		String text = value.toString().trim();

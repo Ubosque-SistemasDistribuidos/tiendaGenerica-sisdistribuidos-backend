@@ -42,7 +42,9 @@ public class VentaController {
 
     	// El frontend envía cliente como objeto anidado: { cedula: 123 }
    		Object clienteObj = payload.get("cliente");
-    	if (clienteObj instanceof Map<?,?> clienteMap) {
+    	if (clienteObj instanceof Map) {
+        	@SuppressWarnings("unchecked")
+        	Map<String, Object> clienteMap = (Map<String, Object>) clienteObj;
         	Object cedula = clienteMap.get("cedula");
         	if (cedula != null) {
             	Cliente cliente = new Cliente();

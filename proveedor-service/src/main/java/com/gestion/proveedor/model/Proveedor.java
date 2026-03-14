@@ -1,13 +1,11 @@
-package com.gestion.tiendag.model;
-import jakarta.persistence.Column;
+package com.gestion.proveedor.model;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-
-import jakarta.persistence.Id;
-
-
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -69,8 +67,4 @@ public class Proveedor {
 	public void setTelefonoProveedor(String telefonoProveedor) {
 		this.telefonoProveedor = telefonoProveedor;
 	}
-
-
-	
-
 }
