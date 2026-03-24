@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +27,17 @@ public class UsuarioController {
 
 	@Autowired
 	private UsuarioRepository usuarioRepository;
+
+	@PostMapping("/autenticar")
+	public ResponseEntity<Map<String, Object>> autenticarUsuario(@RequestBody Map<String, Object> payload) {
+		String nombreUsuario = getString(payload, "usuario");
+		String password = getString(payload, "password");
+
+		return usuarioRepository.findByUsuario(nombreUsuario)
+				.filter(u -> password != null && password.equals(u.getPassword()))
+				.map(u -> ResponseEntity.ok(toFrontendSinPassword(u)))
+				.orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
+	}
 
 	@GetMapping("/listar")
 	public List<Map<String, Object>> verUsuarios() {
@@ -88,6 +100,16 @@ public class UsuarioController {
 		data.put("nombreCompleto", usuario.getNombreUsuario());
 		data.put("email", usuario.getEmailUsuario());
 		data.put("password", usuario.getPassword());
+		return data;
+	}
+
+	private Map<String, Object> toFrontendSinPassword(Usuario usuario) {
+		Map<String, Object> data = new HashMap<>();
+		data.put("id", usuario.getCedulaUsuario());
+		data.put("cedula", usuario.getCedulaUsuario());
+		data.put("usuario", usuario.getUsuario());
+		data.put("nombreCompleto", usuario.getNombreUsuario());
+		data.put("email", usuario.getEmailUsuario());
 		return data;
 	}
 
