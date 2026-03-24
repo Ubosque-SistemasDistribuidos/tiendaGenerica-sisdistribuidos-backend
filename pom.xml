@@ -33,7 +33,12 @@
 
 	<modules>
 		<module>backend-service</module>
+		<module>cliente-service</module>
+		<module>usuario-service</module>
 		<module>proveedor-service</module>
+		<module>producto-service</module>
+		<module>venta-service</module>
+		<module>detalle-venta-service</module>
 	</modules>
 
 	<dependencyManagement>

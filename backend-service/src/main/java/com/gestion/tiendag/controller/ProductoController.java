@@ -15,113 +15,44 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.gestion.tiendag.exception.ResourceNotFoundException;
-import com.gestion.tiendag.model.Producto;
-import com.gestion.tiendag.model.Proveedor;
-import com.gestion.tiendag.repository.ProductoRepository;
+import com.gestion.tiendag.service.ProductoServiceClient;
 
 @RestController
 @RequestMapping("productos")
 public class ProductoController {
 
 	@Autowired
-	private ProductoRepository productoRepository;
+	private ProductoServiceClient productoServiceClient;
 
 	@GetMapping("/listar")
-	public List<Producto> verProductos() {
-		return productoRepository.findAll();
+	public List<?> verProductos() {
+		return productoServiceClient.obtenerProductos();
 	}
 
 	@PostMapping("/guardar")
-	public Producto guardarProducto(@RequestBody Map<String, Object> payload) {
-		Producto producto = new Producto();
-		applyPayload(producto, payload, true);
-		return productoRepository.save(producto);
+	public Object guardarProducto(@RequestBody Map<String, Object> payload) {
+		return productoServiceClient.guardarProducto(payload);
 	}
 
 	@GetMapping("/buscar/{id}")
-	public ResponseEntity<Producto> buscarProducto(@PathVariable Long id) {
-		Producto producto = productoRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("El producto no se encuentra con el id: " + id));
+	public ResponseEntity<?> buscarProducto(@PathVariable Long id) {
+		Object producto = productoServiceClient.obtenerProducto(id);
 		return ResponseEntity.ok(producto);
 	}
 
 	@PutMapping("/actualizar/{id}")
-	public ResponseEntity<Producto> actualizarProducto(@PathVariable Long id, @RequestBody Map<String, Object> payload) {
-		Producto producto = productoRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("El producto no se encuentra con el id: " + id));
-
-		applyPayload(producto, payload, false);
-		Producto actualizado = productoRepository.save(producto);
+	public ResponseEntity<?> actualizarProducto(@PathVariable Long id, @RequestBody Map<String, Object> payload) {
+		Object actualizado = productoServiceClient.actualizarProducto(id, payload);
 		return ResponseEntity.ok(actualizado);
 	}
 
 	@DeleteMapping("/eliminar/{id}")
 	public ResponseEntity<Map<String, Boolean>> eliminarProducto(@PathVariable Long id) {
-		Producto producto = productoRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("El producto no se encuentra con el id: " + id));
-		productoRepository.delete(producto);
+		productoServiceClient.eliminarProducto(id);
 
 		Map<String, Boolean> respuesta = new HashMap<>();
 		respuesta.put("eliminado", Boolean.TRUE);
 		return ResponseEntity.ok(respuesta);
-	}
-
-	private void applyPayload(Producto producto, Map<String, Object> payload, boolean includeCodigo) {
-		if (includeCodigo) {
-			producto.setCodigoProducto(getLong(payload, "codigoProducto", "id"));
-		}
-
-		producto.setNombreProducto(getString(payload, "nombreProducto"));
-		producto.setIvaCompra(getDouble(payload, "ivaCompra"));
-		producto.setPrecioCompra(getDouble(payload, "precioCompra"));
-		producto.setPrecioVenta(getDouble(payload, "precioVenta"));
-
-		long nit = getLong(payload, "nitProveedor");
-		if (nit > 0) {
-			Proveedor proveedor = new Proveedor();
-			proveedor.setNitProveedor(nit);
-			producto.setNitProveedor(proveedor);
-		}
-	}
-
-	private long getLong(Map<String, Object> payload, String... keys) {
-		for (String key : keys) {
-			Object value = payload.get(key);
-			if (value == null) {
-				continue;
-			}
-			if (value instanceof Number) {
-				return ((Number) value).longValue();
-			}
-
-			String text = value.toString().trim();
-			if (!text.isEmpty()) {
-				return Long.parseLong(text);
-			}
-		}
-		return 0L;
-	}
-
-	private Double getDouble(Map<String, Object> payload, String key) {
-		Object value = payload.get(key);
-		if (value == null) {
-			return null;
-		}
-		if (value instanceof Number) {
-			return ((Number) value).doubleValue();
-		}
-
-		String text = value.toString().trim();
-		if (text.isEmpty()) {
-			return null;
-		}
-		return Double.parseDouble(text);
-	}
-
-	private String getString(Map<String, Object> payload, String key) {
-		Object value = payload.get(key);
-		return value == null ? null : value.toString();
 	}
 
 }
