@@ -6,4 +6,6 @@ import com.gestion.tiendag.model.Usuario;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, Long>{
 
+	java.util.Optional<Usuario> findByUsuario(String usuario);
+
 }
