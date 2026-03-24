@@ -27,6 +27,43 @@ public class UsuarioController {
 	@Autowired
 	private UsuarioRepository usuarioRepository;
 
+	@PostMapping("/login")
+	public ResponseEntity<?> login(@RequestBody Map<String, Object> payload) {
+		String usuario = getString(payload, "usuario", "email");
+		String password = getString(payload, "password");
+		
+		if (usuario == null || password == null) {
+			Map<String, String> error = new HashMap<>();
+			error.put("mensaje", "Usuario y contraseña son requeridos");
+			return ResponseEntity.badRequest().body(error);
+		}
+		
+		// Buscar usuario por nombre de usuario o email
+		List<Usuario> usuarios = usuarioRepository.findAll().stream()
+			.filter(u -> u.getUsuario().equals(usuario) || u.getEmailUsuario().equals(usuario))
+			.collect(Collectors.toList());
+		
+		if (usuarios.isEmpty()) {
+			Map<String, String> error = new HashMap<>();
+			error.put("mensaje", "Usuario o contraseña incorrectos");
+			return ResponseEntity.status(401).body(error);
+		}
+		
+		Usuario usuarioEncontrado = usuarios.get(0);
+		
+		// Validar contraseña
+		if (!usuarioEncontrado.getPassword().equals(password)) {
+			Map<String, String> error = new HashMap<>();
+			error.put("mensaje", "Usuario o contraseña incorrectos");
+			return ResponseEntity.status(401).body(error);
+		}
+		
+		// Retornar datos del usuario sin la contraseña
+		Map<String, Object> respuesta = toFrontendSinPassword(usuarioEncontrado);
+		respuesta.put("autenticado", true);
+		return ResponseEntity.ok(respuesta);
+	}
+
 	@GetMapping("/listar")
 	public List<Map<String, Object>> verUsuarios() {
 		return usuarioRepository.findAll().stream().map(this::toFrontend).collect(Collectors.toList());
@@ -88,6 +125,17 @@ public class UsuarioController {
 		data.put("nombreCompleto", usuario.getNombreUsuario());
 		data.put("email", usuario.getEmailUsuario());
 		data.put("password", usuario.getPassword());
+		return data;
+	}
+
+	private Map<String, Object> toFrontendSinPassword(Usuario usuario) {
+		Map<String, Object> data = new HashMap<>();
+		data.put("id", usuario.getCedulaUsuario());
+		data.put("cedula", usuario.getCedulaUsuario());
+		data.put("usuario", usuario.getUsuario());
+		data.put("nombreCompleto", usuario.getNombreUsuario());
+		data.put("email", usuario.getEmailUsuario());
+		// No incluir password por seguridad
 		return data;
 	}
 
