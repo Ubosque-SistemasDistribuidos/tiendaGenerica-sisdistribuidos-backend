@@ -16,7 +16,8 @@ public class CorsConfiguration {
 				registry.addMapping("/**")
 						.allowedOrigins("http://localhost:5173", "http://127.0.0.1:5173","https://fictional-acorn-wr7g6qgpvj9p395rj-5173.app.github.dev/")
 						.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-						.allowedHeaders("*");
+						.allowedHeaders("*")
+						.allowCredentials(true);
 			}
 		};
 	}

@@ -1,0 +1,16 @@
+.git
+.gitignore
+.dockerignore
+.DS_Store
+*.log
+target/
+*.class
+.classpath
+.settings
+.vscode
+.idea
+*.iml
+node_modules
+npm-debug.log
+README.md
+LICENSE

@@ -8,8 +8,9 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.ManyToOne;
 import javax.persistence.JoinColumn;
-
 import javax.persistence.Id;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,6 +20,7 @@ import javax.persistence.Id;
 public class Detalle_venta {
 	
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "codigo_detalle_venta")
 	private long codigoDetalle;
 	

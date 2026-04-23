@@ -1,0 +1,88 @@
+services:
+  backend-service:
+    build:
+      context: .
+      dockerfile: backend-service/Dockerfile
+    container_name: backend-service
+    ports:
+      - "8088:8088"
+    environment:
+      - SPRING_APPLICATION_NAME=backend-service
+    networks:
+      - tienda-network
+
+  cliente-service:
+    build:
+      context: .
+      dockerfile: cliente-service/Dockerfile
+    container_name: cliente-service
+    ports:
+      - "8089:8089"
+    environment:
+      - SPRING_APPLICATION_NAME=cliente-service
+    networks:
+      - tienda-network
+
+  usuario-service:
+    build:
+      context: .
+      dockerfile: usuario-service/Dockerfile
+    container_name: usuario-service
+    ports:
+      - "8090:8090"
+    environment:
+      - SPRING_APPLICATION_NAME=usuario-service
+    networks:
+      - tienda-network
+
+  proveedor-service:
+    build:
+      context: .
+      dockerfile: proveedor-service/Dockerfile
+    container_name: proveedor-service
+    ports:
+      - "8091:8091"
+    environment:
+      - SPRING_APPLICATION_NAME=proveedor-service
+    networks:
+      - tienda-network
+
+  producto-service:
+    build:
+      context: .
+      dockerfile: producto-service/Dockerfile
+    container_name: producto-service
+    ports:
+      - "8092:8092"
+    environment:
+      - SPRING_APPLICATION_NAME=producto-service
+    networks:
+      - tienda-network
+
+  venta-service:
+    build:
+      context: .
+      dockerfile: venta-service/Dockerfile
+    container_name: venta-service
+    ports:
+      - "8093:8093"
+    environment:
+      - SPRING_APPLICATION_NAME=venta-service
+    networks:
+      - tienda-network
+
+  detalle-venta-service:
+    build:
+      context: .
+      dockerfile: detalle-venta-service/Dockerfile
+    container_name: detalle-venta-service
+    ports:
+      - "8094:8094"
+    environment:
+      - SPRING_APPLICATION_NAME=detalle-venta-service
+    networks:
+      - tienda-network
+
+networks:
+  tienda-network:
+    driver: bridge
