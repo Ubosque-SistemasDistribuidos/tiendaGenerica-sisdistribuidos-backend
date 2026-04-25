@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -74,7 +75,7 @@ public class VentaController {
 	}
 	
 	@GetMapping("/buscar/{id}")
-	public ResponseEntity<Venta> buscarVenta(@PathVariable Long id){
+	public ResponseEntity<Venta> buscarVenta(@PathVariable @NonNull Long id){
 		Venta venta=ventaRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("La venta no se encuentra con el id: "+id));
 		return ResponseEntity.ok(venta);

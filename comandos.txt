@@ -1,0 +1,1 @@
+docker-compose up -d backend-service-1 backend-service-2 backend-lb-1 backend-lb-2 usuario-service-1 usuario-service-2 usuario-lb-1 usuario-lb-2

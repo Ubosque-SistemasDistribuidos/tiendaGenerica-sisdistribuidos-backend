@@ -1,87 +1,486 @@
 services:
-  backend-service:
+  # ======================== BACKEND SERVICE ========================
+  backend-service-1:
     build:
       context: .
       dockerfile: backend-service/Dockerfile
-    container_name: backend-service
-    ports:
-      - "8088:8088"
+    container_name: backend-service-1
     environment:
-      - SPRING_APPLICATION_NAME=backend-service
+      - SPRING_APPLICATION_NAME=backend-service-1
+      - SERVER_PORT=8088
     networks:
       - tienda-network
+    healthcheck:
+      test: ["CMD-SHELL", "exec 6<>/dev/tcp/localhost/8088 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
 
-  cliente-service:
+  backend-service-2:
+    build:
+      context: .
+      dockerfile: backend-service/Dockerfile
+    container_name: backend-service-2
+    environment:
+      - SPRING_APPLICATION_NAME=backend-service-2
+      - SERVER_PORT=8088
+    networks:
+      - tienda-network
+    healthcheck:
+      test: ["CMD-SHELL", "exec 6<>/dev/tcp/localhost/8088 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+
+  backend-lb-1:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    container_name: backend-lb-1
+    volumes:
+      - ./nginx/backend-lb-1.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "8088:9088"
+      - "8401:8401"
+    depends_on:
+      - backend-service-1
+      - backend-service-2
+    networks:
+      - tienda-network
+    restart: unless-stopped
+
+  backend-lb-2:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    container_name: backend-lb-2
+    volumes:
+      - ./nginx/backend-lb-2.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "9089:9088"
+      - "8402:8401"
+    depends_on:
+      - backend-service-1
+      - backend-service-2
+    networks:
+      - tienda-network
+    restart: unless-stopped
+
+  # ======================== CLIENTE SERVICE ========================
+  cliente-service-1:
     build:
       context: .
       dockerfile: cliente-service/Dockerfile
-    container_name: cliente-service
-    ports:
-      - "8089:8089"
+    container_name: cliente-service-1
     environment:
-      - SPRING_APPLICATION_NAME=cliente-service
+      - SPRING_APPLICATION_NAME=cliente-service-1
+      - SERVER_PORT=8089
     networks:
       - tienda-network
+    healthcheck:
+      test: ["CMD-SHELL", "exec 6<>/dev/tcp/localhost/8089 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
 
-  usuario-service:
+  cliente-service-2:
+    build:
+      context: .
+      dockerfile: cliente-service/Dockerfile
+    container_name: cliente-service-2
+    environment:
+      - SPRING_APPLICATION_NAME=cliente-service-2
+      - SERVER_PORT=8089
+    networks:
+      - tienda-network
+    healthcheck:
+      test: ["CMD-SHELL", "exec 6<>/dev/tcp/localhost/8089 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+
+  cliente-lb-1:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    container_name: cliente-lb-1
+    volumes:
+      - ./nginx/cliente-lb-1.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "8089:9089"
+      - "8403:8401"
+    depends_on:
+      - cliente-service-1
+      - cliente-service-2
+    networks:
+      - tienda-network
+    restart: unless-stopped
+
+  cliente-lb-2:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    container_name: cliente-lb-2
+    volumes:
+      - ./nginx/cliente-lb-2.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "9090:9089"
+      - "8404:8401"
+    depends_on:
+      - cliente-service-1
+      - cliente-service-2
+    networks:
+      - tienda-network
+    restart: unless-stopped
+
+  # ======================== USUARIO SERVICE ========================
+  usuario-service-1:
     build:
       context: .
       dockerfile: usuario-service/Dockerfile
-    container_name: usuario-service
-    ports:
-      - "8090:8090"
+    container_name: usuario-service-1
     environment:
-      - SPRING_APPLICATION_NAME=usuario-service
+      - SPRING_APPLICATION_NAME=usuario-service-1
+      - SERVER_PORT=8090
     networks:
       - tienda-network
+    healthcheck:
+      test: ["CMD-SHELL", "exec 6<>/dev/tcp/localhost/8090 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
 
-  proveedor-service:
+  usuario-service-2:
+    build:
+      context: .
+      dockerfile: usuario-service/Dockerfile
+    container_name: usuario-service-2
+    environment:
+      - SPRING_APPLICATION_NAME=usuario-service-2
+      - SERVER_PORT=8090
+    networks:
+      - tienda-network
+    healthcheck:
+      test: ["CMD-SHELL", "exec 6<>/dev/tcp/localhost/8090 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+
+  usuario-lb-1:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    container_name: usuario-lb-1
+    volumes:
+      - ./nginx/usuario-lb-1.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "8090:9090"
+      - "8405:8401"
+    depends_on:
+      - usuario-service-1
+      - usuario-service-2
+    networks:
+      - tienda-network
+    restart: unless-stopped
+
+  usuario-lb-2:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    container_name: usuario-lb-2
+    volumes:
+      - ./nginx/usuario-lb-2.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "9091:9090"
+      - "8406:8401"
+    depends_on:
+      - usuario-service-1
+      - usuario-service-2
+    networks:
+      - tienda-network
+    restart: unless-stopped
+
+  # ======================== PROVEEDOR SERVICE ========================
+  proveedor-service-1:
     build:
       context: .
       dockerfile: proveedor-service/Dockerfile
-    container_name: proveedor-service
-    ports:
-      - "8091:8091"
+    container_name: proveedor-service-1
     environment:
-      - SPRING_APPLICATION_NAME=proveedor-service
+      - SPRING_APPLICATION_NAME=proveedor-service-1
+      - SERVER_PORT=8091
     networks:
       - tienda-network
+    healthcheck:
+      test: ["CMD-SHELL", "exec 6<>/dev/tcp/localhost/8091 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
 
-  producto-service:
+  proveedor-service-2:
+    build:
+      context: .
+      dockerfile: proveedor-service/Dockerfile
+    container_name: proveedor-service-2
+    environment:
+      - SPRING_APPLICATION_NAME=proveedor-service-2
+      - SERVER_PORT=8091
+    networks:
+      - tienda-network
+    healthcheck:
+      test: ["CMD-SHELL", "exec 6<>/dev/tcp/localhost/8091 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+
+  proveedor-lb-1:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    container_name: proveedor-lb-1
+    volumes:
+      - ./nginx/proveedor-lb-1.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "8091:9091"
+      - "8407:8401"
+    depends_on:
+      - proveedor-service-1
+      - proveedor-service-2
+    networks:
+      - tienda-network
+    restart: unless-stopped
+
+  proveedor-lb-2:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    container_name: proveedor-lb-2
+    volumes:
+      - ./nginx/proveedor-lb-2.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "9092:9091"
+      - "8408:8401"
+    depends_on:
+      - proveedor-service-1
+      - proveedor-service-2
+    networks:
+      - tienda-network
+    restart: unless-stopped
+
+  # ======================== PRODUCTO SERVICE ========================
+  producto-service-1:
     build:
       context: .
       dockerfile: producto-service/Dockerfile
-    container_name: producto-service
-    ports:
-      - "8092:8092"
+    container_name: producto-service-1
     environment:
-      - SPRING_APPLICATION_NAME=producto-service
+      - SPRING_APPLICATION_NAME=producto-service-1
+      - SERVER_PORT=8092
     networks:
       - tienda-network
+    healthcheck:
+      test: ["CMD-SHELL", "exec 6<>/dev/tcp/localhost/8092 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
 
-  venta-service:
+  producto-service-2:
+    build:
+      context: .
+      dockerfile: producto-service/Dockerfile
+    container_name: producto-service-2
+    environment:
+      - SPRING_APPLICATION_NAME=producto-service-2
+      - SERVER_PORT=8092
+    networks:
+      - tienda-network
+    healthcheck:
+      test: ["CMD-SHELL", "exec 6<>/dev/tcp/localhost/8092 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+
+  producto-lb-1:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    container_name: producto-lb-1
+    volumes:
+      - ./nginx/producto-lb-1.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "8092:9092"
+      - "8409:8401"
+    depends_on:
+      - producto-service-1
+      - producto-service-2
+    networks:
+      - tienda-network
+    restart: unless-stopped
+
+  producto-lb-2:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    container_name: producto-lb-2
+    volumes:
+      - ./nginx/producto-lb-2.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "9093:9092"
+      - "8410:8401"
+    depends_on:
+      - producto-service-1
+      - producto-service-2
+    networks:
+      - tienda-network
+    restart: unless-stopped
+
+  # ======================== VENTA SERVICE ========================
+  venta-service-1:
     build:
       context: .
       dockerfile: venta-service/Dockerfile
-    container_name: venta-service
-    ports:
-      - "8093:8093"
+    container_name: venta-service-1
     environment:
-      - SPRING_APPLICATION_NAME=venta-service
+      - SPRING_APPLICATION_NAME=venta-service-1
+      - SERVER_PORT=8093
     networks:
       - tienda-network
+    healthcheck:
+      test: ["CMD-SHELL", "exec 6<>/dev/tcp/localhost/8093 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
 
-  detalle-venta-service:
+  venta-service-2:
+    build:
+      context: .
+      dockerfile: venta-service/Dockerfile
+    container_name: venta-service-2
+    environment:
+      - SPRING_APPLICATION_NAME=venta-service-2
+      - SERVER_PORT=8093
+    networks:
+      - tienda-network
+    healthcheck:
+      test: ["CMD-SHELL", "exec 6<>/dev/tcp/localhost/8093 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+
+  venta-lb-1:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    container_name: venta-lb-1
+    volumes:
+      - ./nginx/venta-lb-1.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "8093:9093"
+      - "8411:8401"
+    depends_on:
+      - venta-service-1
+      - venta-service-2
+    networks:
+      - tienda-network
+    restart: unless-stopped
+
+  venta-lb-2:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    container_name: venta-lb-2
+    volumes:
+      - ./nginx/venta-lb-2.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "9094:9093"
+      - "8412:8401"
+    depends_on:
+      - venta-service-1
+      - venta-service-2
+    networks:
+      - tienda-network
+    restart: unless-stopped
+
+  # ======================== DETALLE VENTA SERVICE ========================
+  detalle-venta-service-1:
     build:
       context: .
       dockerfile: detalle-venta-service/Dockerfile
-    container_name: detalle-venta-service
-    ports:
-      - "8094:8094"
+    container_name: detalle-venta-service-1
     environment:
-      - SPRING_APPLICATION_NAME=detalle-venta-service
+      - SPRING_APPLICATION_NAME=detalle-venta-service-1
+      - SERVER_PORT=8094
     networks:
       - tienda-network
+    healthcheck:
+      test: ["CMD-SHELL", "exec 6<>/dev/tcp/localhost/8094 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+
+  detalle-venta-service-2:
+    build:
+      context: .
+      dockerfile: detalle-venta-service/Dockerfile
+    container_name: detalle-venta-service-2
+    environment:
+      - SPRING_APPLICATION_NAME=detalle-venta-service-2
+      - SERVER_PORT=8094
+    networks:
+      - tienda-network
+    healthcheck:
+      test: ["CMD-SHELL", "exec 6<>/dev/tcp/localhost/8094 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+
+  detalle-venta-lb-1:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    container_name: detalle-venta-lb-1
+    volumes:
+      - ./nginx/detalle-venta-lb-1.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "8094:9094"
+      - "8413:8401"
+    depends_on:
+      - detalle-venta-service-1
+      - detalle-venta-service-2
+    networks:
+      - tienda-network
+    restart: unless-stopped
+
+  detalle-venta-lb-2:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    container_name: detalle-venta-lb-2
+    volumes:
+      - ./nginx/detalle-venta-lb-2.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "9095:9094"
+      - "8414:8401"
+    depends_on:
+      - detalle-venta-service-1
+      - detalle-venta-service-2
+    networks:
+      - tienda-network
+    restart: unless-stopped
 
 networks:
   tienda-network:
