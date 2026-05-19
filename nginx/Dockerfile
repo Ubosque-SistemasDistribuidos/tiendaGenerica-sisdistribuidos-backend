@@ -1,7 +1,7 @@
 FROM nginx:alpine
 
 # Copiar configuración de nginx
-COPY nginx/nginx.conf /etc/nginx/nginx.conf
+COPY nginx/ /etc/nginx/conf.d/
 
 # Exponer puerto
 EXPOSE 8090
